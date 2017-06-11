@@ -28,6 +28,13 @@
     $post_content = $_POST['post_content'];
     move_uploaded_file($post_image_temp, "../images/$post_image");
 
+    if(empty($post_image)) {
+      $query = "SELECT * FROM posts WHERE post_id = $the_post_id ";
+      $select_image = mysqli_query($connection, $query);
+      while($row = mysqli_fetch_array($select_image)) {
+        $post_image = $row['post_image'];
+      }
+    }
 
     $query = "UPDATE posts SET ";
     $query .= "post_title = '{$post_title}', ";
@@ -41,13 +48,7 @@
     $query .= "WHERE post_id = {$the_post_id} ";
     $update_post = mysqli_query($connection, $query);
     confirm($update_post);
-  }
-  if(empty($post_image)) {
-    $query = "SELECT * FROM posts WHERE post_id = $the_post_id ";
-    $select_image = mysqli_query($connection, $query);
-    while($row = mysqli_fetch_array($select_image)) {
-      $post_image = $row['post_image'];
-    }
+    echo "<p class='bg-success'>Post Updated. <a href='../post.php?p_id={$the_post_id}'>View Post</a> or <a href='posts.php'>Edit More Posts</a></p>";
   }
 
  ?>
@@ -77,12 +78,25 @@
     <input value="<?php echo $post_author; ?>" type="text" class="form-control" name="author">
   </div>
   <div class="form-group">
+    <select class="" name="post_status">
+      <option value="<?php echo $post_status; ?>"><?php echo $post_status; ?></option>
+      <?php
+        if($post_status == 'published') {
+          echo "<option value='draft'>Draft</option>";
+        } else {
+          echo "<option value='published'>Publish</option>";
+
+        }
+       ?>
+    </select>
+  </div>
+  <!-- <div class="form-group">
     <label for="post_status">Post Status</label>
     <input value="<?php echo $post_status; ?>" type="text" class="form-control" name="post_status">
-  </div>
+  </div> -->
   <div class="form-group">
     <img width="100" src="../images/<?php echo $post_image; ?>" alt="">
-    <input type="file" name="image">
+    <input type="file" name="image" value="<?php echo $post_image ?>">
   </div>
   <div class="form-group">
     <label for="post_tags">Post Tags</label>
