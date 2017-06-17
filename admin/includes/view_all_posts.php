@@ -1,7 +1,7 @@
 <?php
   if(isset($_POST['checkBoxArray'])) {
     foreach($_POST['checkBoxArray'] as $postValueId){
-      $bulk_options = $_POST['bulk_options'];
+      $bulk_options = escape($_POST['bulk_options']);
       switch($bulk_options) {
         case 'published':
         $query = "UPDATE posts SET post_status = '{$bulk_options}' WHERE post_id = {$postValueId} ";
@@ -25,14 +25,14 @@
         $query = "SELECT * FROM posts WHERE post_id = '{$postValueId}' ";
         $select_post_query = mysqli_query($connection, $query);
         while ($row = mysqli_fetch_array($select_post_query)) {
-          $post_title = $row['post_title'];
-          $post_category_id = $row['post_category_id'];
-          $post_date = $row['post_date'];
-          $post_author = $row['post_author'];
-          $post_status = $row['post_status'];
-          $post_image = $row['post_image'];
-          $post_tags = $row['post_tags'];
-          $post_content = $row['post_content'];
+          $post_title = escape($row['post_title']);
+          $post_category_id = escape($row['post_category_id']);
+          $post_date = escape($row['post_date']);
+          $post_author = escape($row['post_author']);
+          $post_status = escape($row['post_status']);
+          $post_image = escape($row['post_image']);
+          $post_tags = escape($row['post_tags']);
+          $post_content = escape($row['post_content']);
         }
         $query = "INSERT INTO posts(post_category_id, post_title, post_author, post_date, post_image, post_content, post_tags, post_status) ";
         $query .= "VALUES({$post_category_id}, '{$post_title}', '{$post_author}', now(), '{$post_image}', '{$post_content}', '{$post_tags}', '{$post_status}')";
@@ -67,7 +67,7 @@
       <tr>
         <th><input type="checkbox" id="selectAllBoxes"></th>
         <th>Id</th>
-        <th>Author</th>
+        <th>User</th>
         <th>Title</th>
         <th>Category</th>
         <th>Status</th>
@@ -86,10 +86,11 @@
         $query = "SELECT * FROM posts ORDER BY post_id DESC";
         $select_posts = mysqli_query($connection, $query);
         while($row = mysqli_fetch_assoc($select_posts)) {
-          $post_id = $row['post_id'];
+          $post_id = escape($row['post_id']);
           $post_author = $row['post_author'];
+          $post_user = $row['post_user'];
           $post_title = $row['post_title'];
-          $post_category_id = $row['post_category_id'];
+          $post_category_id = escape($row['post_category_id']);
           $post_status = $row['post_status'];
           $post_image = $row['post_image'];
           $post_tags = $row['post_tags'];
@@ -101,7 +102,12 @@
           <td><input class='checkBoxes' type='checkbox' name='checkBoxArray[]' value='<?php echo $post_id ?>'></td>
           <?php
           echo "<td>{$post_id}</td>";
-          echo "<td>{$post_author}</td>";
+          if (!empty($post_author)) {
+            echo "<td>{$post_author}</td>";
+          } else if (!empty($post_user)) {
+
+            echo "<td>{$post_user}</td>";
+          }
           echo "<td>{$post_title}</td>";
 
           $query = "SELECT * FROM categories WHERE cat_id = {$post_category_id} ";
@@ -137,14 +143,14 @@
 
 <?php
   if(isset($_GET['delete'])) {
-    $the_post_id = $_GET['delete'];
+    $the_post_id = escape($_GET['delete']);
     $query = "DELETE FROM posts WHERE post_id = {$the_post_id} ";
     $delete_query = mysqli_query($connection, $query);
     header("Location: posts.php");
   }
 
   if(isset($_GET['reset'])) {
-    $the_post_id = $_GET['reset'];
+    $the_post_id = escape($_GET['reset']);
     $query = "UPDATE  posts SET post_views_count = 0 WHERE post_id =" . mysqli_real_escape_string($connection, $_GET['reset']) . " ";
     $reset_query = mysqli_query($connection, $query);
     header("Location: posts.php");

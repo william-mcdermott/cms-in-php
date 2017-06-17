@@ -1,6 +1,6 @@
 <?php
   if(isset($_GET['edit_user'])) {
-    $the_user_id = $_GET['edit_user'];
+    $the_user_id = escape($_GET['edit_user']);
     $query = "SELECT * FROM users WHERE user_id = $the_user_id ";
     $select_users_query = mysqli_query($connection, $query);
     while($row = mysqli_fetch_assoc($select_users_query)) {
@@ -15,12 +15,12 @@
     }
 
   if(isset($_POST['edit_user'])) {
-    $user_firstname = $_POST['user_firstname'];
-    $user_lastname = $_POST['user_lastname'];
-    $user_role = $_POST['user_role'];
-    $username = $_POST['username'];
-    $user_email = $_POST['user_email'];
-    $user_password = $_POST['user_password'];
+    $user_firstname = escape($_POST['user_firstname']);
+    $user_lastname = escape($_POST['user_lastname']);
+    $user_role = escape($_POST['user_role']);
+    $username = escape($_POST['username']);
+    $user_email = escape($_POST['user_email']);
+    $user_password = escape($_POST['user_password']);
     $post_date = date('d-m-y');
     if(!empty($user_password)) {
       $query_password = "SELECT user_password FROM users WHERE user_id = $the_user_id";

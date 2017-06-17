@@ -11,7 +11,7 @@
             <div class="col-md-8">
               <?php
                 if(isset($_GET['category'])) {
-                  $post_category_id = $_GET['category'];
+                  $post_category_id = escape($_GET['category']);
                 }
                 $query = "SELECT * FROM posts WHERE post_category_id = $post_category_id";
                 $select_all_posts_query = mysqli_query($connection, $query);
