@@ -21,9 +21,18 @@
                 } else {
                   $page_1 = ($page * $per_page) - $per_page;
                 }
-                $post_query_count = "SELECT * FROM posts";
+
+                if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin') {
+                  $post_query_count = "SELECT * FROM posts";
+                } else {
+                  $post_query_count = "SELECT * FROM posts WHERE post_status = 'published'";
+                }
+
                 $find_count = mysqli_query($connection, $post_query_count);
                 $count = mysqli_num_rows($find_count);
+                if ($count < 1) {
+                  echo "<h1 class='text-center'>No posts available</h1>";
+                } else {
                 $count = ceil($count / $per_page);
 
                 $query = "SELECT * FROM posts LIMIT $page_1, $per_page";
@@ -36,15 +45,8 @@
                   $post_image = $row['post_image'];
                   $post_content = substr($row['post_content'], 0, 100);
                   $post_status = $row['post_status'];
-                  if($post_status === 'published') {
                     ?>
-                    <h1 class="page-header">
-                    Page Heading
-                    <small>Secondary Text</small>
-                    </h1>
-
                     <!-- First Blog Post -->
-                    <h1><?php echo $count; ?></h1>
                     <h2>
                     <a href="post.php?p_id=<?php echo $post_id; ?>"><?php echo $post_title ?></a>
                   </h2>
@@ -64,7 +66,6 @@
 
           <?php  }
         }
-
                ?>
 
             </div>
